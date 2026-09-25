@@ -1,0 +1,271 @@
+{
+  "name": "checkpoint",
+  "threshold": 0.8,
+  "images": [
+    {
+      "filename": "cat_welcome.png",
+      "results": [
+        {
+          "model": "VGG16",
+          "top": [
+            {
+              "label": "tabby",
+              "confidence": 45.45,
+              "is_confident": false
+            },
+            {
+              "label": "tiger_cat",
+              "confidence": 19.29,
+              "is_confident": false
+            },
+            {
+              "label": "Egyptian_cat",
+              "confidence": 15.58,
+              "is_confident": false
+            },
+            {
+              "label": "Persian_cat",
+              "confidence": 2.57,
+              "is_confident": false
+            },
+            {
+              "label": "tub",
+              "confidence": 2.01,
+              "is_confident": false
+            }
+          ],
+          "top1_confident": false,
+          "time_ms": 1442.7
+        },
+        {
+          "model": "ResNet50",
+          "top": [
+            {
+              "label": "tabby",
+              "confidence": 78.52,
+              "is_confident": false
+            },
+            {
+              "label": "Persian_cat",
+              "confidence": 5.99,
+              "is_confident": false
+            },
+            {
+              "label": "tiger_cat",
+              "confidence": 5.41,
+              "is_confident": false
+            },
+            {
+              "label": "Egyptian_cat",
+              "confidence": 3.17,
+              "is_confident": false
+            },
+            {
+              "label": "lynx",
+              "confidence": 0.54,
+              "is_confident": false
+            }
+          ],
+          "top1_confident": false,
+          "time_ms": 5063.1
+        },
+        {
+          "model": "InceptionV3",
+          "top": [
+            {
+              "label": "Persian_cat",
+              "confidence": 66.16,
+              "is_confident": false
+            },
+            {
+              "label": "tabby",
+              "confidence": 9.85,
+              "is_confident": false
+            },
+            {
+              "label": "tiger_cat",
+              "confidence": 2.42,
+              "is_confident": false
+            },
+            {
+              "label": "tub",
+              "confidence": 1.64,
+              "is_confident": false
+            },
+            {
+              "label": "Egyptian_cat",
+              "confidence": 0.88,
+              "is_confident": false
+            }
+          ],
+          "top1_confident": false,
+          "time_ms": 5502.4
+        },
+        {
+          "model": "DenseNet121",
+          "top": [
+            {
+              "label": "tabby",
+              "confidence": 44.02,
+              "is_confident": false
+            },
+            {
+              "label": "tiger_cat",
+              "confidence": 32.36,
+              "is_confident": false
+            },
+            {
+              "label": "Egyptian_cat",
+              "confidence": 11.31,
+              "is_confident": false
+            },
+            {
+              "label": "Persian_cat",
+              "confidence": 1.87,
+              "is_confident": false
+            },
+            {
+              "label": "plastic_bag",
+              "confidence": 0.42,
+              "is_confident": false
+            }
+          ],
+          "top1_confident": false,
+          "time_ms": 9055.9
+        },
+        {
+          "model": "Xception",
+          "top": [
+            {
+              "label": "tabby",
+              "confidence": 49.13,
+              "is_confident": false
+            },
+            {
+              "label": "tiger_cat",
+              "confidence": 13.58,
+              "is_confident": false
+            },
+            {
+              "label": "Egyptian_cat",
+              "confidence": 8.53,
+              "is_confident": false
+            },
+            {
+              "label": "Persian_cat",
+              "confidence": 8.08,
+              "is_confident": false
+            },
+            {
+              "label": "lynx",
+              "confidence": 0.64,
+              "is_confident": false
+            }
+          ],
+          "top1_confident": false,
+          "time_ms": 3150.9
+        },
+        {
+          "model": "MobileNetV2",
+          "top": [
+            {
+              "label": "tabby",
+              "confidence": 53.44,
+              "is_confident": false
+            },
+            {
+              "label": "hamper",
+              "confidence": 6.33,
+              "is_confident": false
+            },
+            {
+              "label": "Persian_cat",
+              "confidence": 5.75,
+              "is_confident": false
+            },
+            {
+              "label": "tiger_cat",
+              "confidence": 3.16,
+              "is_confident": false
+            },
+            {
+              "label": "Egyptian_cat",
+              "confidence": 2.64,
+              "is_confident": false
+            }
+          ],
+          "top1_confident": false,
+          "time_ms": 2785.0
+        },
+        {
+          "model": "EfficientNetB0",
+          "top": [
+            {
+              "label": "tabby",
+              "confidence": 18.97,
+              "is_confident": false
+            },
+            {
+              "label": "Egyptian_cat",
+              "confidence": 14.95,
+              "is_confident": false
+            },
+            {
+              "label": "tiger_cat",
+              "confidence": 9.29,
+              "is_confident": false
+            },
+            {
+              "label": "Persian_cat",
+              "confidence": 8.56,
+              "is_confident": false
+            },
+            {
+              "label": "lynx",
+              "confidence": 2.13,
+              "is_confident": false
+            }
+          ],
+          "top1_confident": false,
+          "time_ms": 4786.2
+        },
+        {
+          "model": "EfficientNetV2B0",
+          "top": [
+            {
+              "label": "tabby",
+              "confidence": 45.67,
+              "is_confident": false
+            },
+            {
+              "label": "Egyptian_cat",
+              "confidence": 19.08,
+              "is_confident": false
+            },
+            {
+              "label": "tiger_cat",
+              "confidence": 11.64,
+              "is_confident": false
+            },
+            {
+              "label": "Persian_cat",
+              "confidence": 1.38,
+              "is_confident": false
+            },
+            {
+              "label": "lynx",
+              "confidence": 0.56,
+              "is_confident": false
+            }
+          ],
+          "top1_confident": false,
+          "time_ms": 5384.4
+        }
+      ]
+    }
+  ],
+  "metrics": null,
+  "labels": {},
+  "n_images": 1,
+  "saved_at": "2026-09-24T00:55:39.030597"
+}

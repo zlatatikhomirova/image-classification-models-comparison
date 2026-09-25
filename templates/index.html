@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Image Classification Models Comparison</title>
+  <link rel="icon" href="data:,">
+
+  <!-- Tom Select CSS -->
+  <link rel="stylesheet" href="/static/lib/tom-select/tom-select.css">
+
+  <!-- Наши CSS -->
+  <link rel="stylesheet" href="/static/css/base.css">
+  <link rel="stylesheet" href="/static/css/banner.css">
+  <link rel="stylesheet" href="/static/css/dropzone.css">
+  <link rel="stylesheet" href="/static/css/preview.css">
+  <link rel="stylesheet" href="/static/css/controls.css">
+  <link rel="stylesheet" href="/static/css/results.css">
+  <link rel="stylesheet" href="/static/css/metrics.css">
+  <link rel="stylesheet" href="/static/css/charts.css">
+  <link rel="stylesheet" href="/static/css/modal.css">
+</head>
+<body>
+  <div class="page">
+    <div class="container">
+
+      <!-- ============================================================
+           ПЛАШКА ОПИСАНИЯ
+           ============================================================ -->
+      <section class="info-banner">
+        <h1>Image Classification Models Comparison</h1>
+        <p class="info-subtitle">
+          Сравнение 8 предобученных нейронных сетей на задаче классификации
+          изображений (ImageNet, 1000 классов). Загрузите изображения,
+          при необходимости укажите истинные классы — и получите
+          предсказания, метрики качества и графики сравнения.
+        </p>
+
+        <div class="info-grid">
+          <div class="info-card">
+            <div class="info-card-title">Модели</div>
+            <ul class="info-list">
+              <li>VGG16</li>
+              <li>ResNet50</li>
+              <li>InceptionV3</li>
+              <li>DenseNet121</li>
+              <li>Xception</li>
+              <li>MobileNetV2</li>
+              <li>EfficientNetB0</li>
+              <li>EfficientNetV2B0</li>
+            </ul>
+          </div>
+
+          <div class="info-card">
+            <div class="info-card-title">Метрики</div>
+            <ul class="info-list">
+              <li>Top-1 accuracy</li>
+              <li>Top-5 accuracy</li>
+              <li>Macro-F1</li>
+              <li>Внутриклассовая согласованность</li>
+              <li>Средняя уверенность</li>
+              <li>Доля уверенных ошибок</li>
+              <li>Среднее время инференса</li>
+            </ul>
+          </div>
+
+          <div class="info-card">
+            <div class="info-card-title">Как пользоваться</div>
+            <ol class="info-list info-list-ordered">
+              <li>Загрузите изображения или тестовый набор</li>
+              <li>Укажите истинные классы (если нужны метрики)</li>
+              <li>Настройте порог уверенности</li>
+              <li>Нажмите «Сравнить»</li>
+            </ol>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============================================================
+           ЗАГРУЗКА ФАЙЛОВ
+           ============================================================ -->
+      <section class="drop-section">
+        <div id="dropZone" class="drop-zone">
+          <p class="drop-text">Перетащите изображения сюда</p>
+          <p class="drop-hint">
+            или нажмите для выбора · JPG, PNG, BMP, WEBP · до 50 файлов
+          </p>
+          <input type="file" id="fileInput" accept="image/*" multiple hidden>
+        </div>
+      </section>
+
+      <!-- ============================================================
+           ПАНЕЛЬ УПРАВЛЕНИЯ
+           ============================================================ -->
+      <section class="controls">
+        <!-- Ряд 1: порог + кнопки -->
+        <div class="controls-row">
+          <label class="threshold-label">
+            <span>Порог уверенности:</span>
+            <input type="range" id="threshold"
+                   min="0" max="1" step="0.05" value="0.8">
+            <span id="thresholdValue" class="threshold-value">80%</span>
+          </label>
+
+          <div class="buttons">
+            <button id="analyzeBtn" class="btn btn-primary" onclick="runAnalyze()">
+              Сравнить
+            </button>
+            <button class="btn btn-secondary" onclick="clearAll()">
+              Очистить
+            </button>
+          </div>
+        </div>
+
+        <!-- Ряд 2: загрузка тестового набора -->
+        <div class="controls-row">
+          <button class="btn btn-secondary"
+                  onclick="loadTestSet(10, 'balanced')">
+            Загрузить тестовый набор (10)
+          </button>
+          <button class="btn btn-secondary"
+                  onclick="loadTestSet(20, 'balanced')">
+            Тестовый набор (20)
+          </button>
+          <button id="loadAllBtn" class="btn btn-secondary">
+            Загрузить все
+          </button>
+        </div>
+
+        <!-- Ряд 3: чекпоинты -->
+        <div class="checkpoint-panel">
+          <div class="checkpoint-row">
+            <label class="checkpoint-label">
+              <input type="checkbox" id="saveCheckpointToggle">
+              Сохранить результат в чекпоинт
+            </label>
+            <input type="text" id="checkpointName" class="text-input"
+                   placeholder="Имя чекпоинта (необязательно)">
+          </div>
+
+          <div class="checkpoint-row">
+            <select id="checkpointSelect" class="checkpoint-select">
+              <option value="">— выбрать чекпоинт —</option>
+            </select>
+            <button class="btn btn-secondary" onclick="restoreCheckpoint()">
+              Загрузить
+            </button>
+            <button class="btn btn-secondary" onclick="saveCheckpoint()">
+              Сохранить сейчас
+            </button>
+            <button class="btn btn-secondary" onclick="deleteCheckpoint()">
+              Удалить
+            </button>
+            <button class="btn btn-secondary" onclick="refreshCheckpoints()">
+              Обновить
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============================================================
+           ПРЕВЬЮ ЗАГРУЖЕННЫХ ФАЙЛОВ
+           ============================================================ -->
+      <section id="preview" class="preview-panel"></section>
+
+      <!-- ============================================================
+           ПРОГРЕСС-БАР
+           ============================================================ -->
+      <div id="progressWrap" class="progress-wrap" style="display:none;">
+        <div class="progress-track">
+          <div id="progressFill" class="progress-fill"></div>
+        </div>
+        <div id="progressText" class="progress-text"></div>
+      </div>
+
+      <!-- ============================================================
+           СТАТУС
+           ============================================================ -->
+      <div id="status" class="status"></div>
+
+      <!-- ============================================================
+           РЕЗУЛЬТАТЫ
+           ============================================================ -->
+      <section id="results" class="results"></section>
+
+      <!-- ============================================================
+           МЕТРИКИ И ГРАФИКИ
+           ============================================================ -->
+      <section id="metricsBlock" class="metrics-block"></section>
+      <section id="charts" class="charts-section"></section>
+
+    </div>
+
+    <!-- ============================================================
+         ФУТЕР
+         ============================================================ -->
+    <footer class="footer">
+      ML Compare App · FastAPI + Keras Applications · 2026
+    </footer>
+  </div>
+
+  <!-- ============================================================
+       МОДАЛЬНОЕ ОКНО "О МОДЕЛИ"
+       ============================================================ -->
+  <div id="modalOverlay" class="modal-overlay" onclick="closeModal(event)">
+    <div class="modal" onclick="event.stopPropagation()">
+      <button class="modal-close" onclick="closeModal()" title="Закрыть">x</button>
+      <h2 id="modalTitle"></h2>
+      <div id="modalBody"></div>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       СКРИПТЫ
+       ============================================================ -->
+
+  <!-- Библиотеки -->
+  <script src="/static/lib/tom-select/tom-select.complete.min.js"></script>
+
+  <!-- Наши модули (порядок важен) -->
+  <script src="/static/js/api.js"></script>
+  <script src="/static/js/state.js"></script>
+  <script src="/static/js/modal.js"></script>
+  <script src="/static/js/dropzone.js"></script>
+  <script src="/static/js/preview.js"></script>
+  <script src="/static/js/analyze.js"></script>
+  <script src="/static/js/metrics.js"></script>
+  <script src="/static/js/charts.js"></script>
+  <script src="/static/js/checkpoints.js"></script>
+  <script src="/static/js/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,204 @@
+/* static/css/preview.css */
+
+.preview-panel {
+  /* Большая область — почти весь экран */
+  height: calc(100vh - 320px);
+  min-height: 500px;
+  max-height: 85vh;
+  overflow-y: auto;
+  padding: 16px 20px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--card);
+  margin-bottom: 16px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+  resize: vertical;
+}
+
+.preview-panel:empty {
+  display: none;
+}
+
+.preview-panel-label {
+  font-size: 13px;
+  color: var(--muted);
+  margin-bottom: 14px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.preview-count {
+  font-weight: 600;
+  color: var(--accent);
+}
+
+/* ---------- Сетка карточек ---------- */
+.preview-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+  gap: 14px;
+}
+
+/* ---------- Карточка ---------- */
+.thumb-card {
+  display: flex;
+  gap: 14px;
+  padding: 12px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: white;
+  height: 130px;
+  transition: 0.15s;
+  position: relative;
+}
+
+.thumb-card:hover {
+  border-color: #b8c6d6;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+.thumb-card.has-label {
+  border-left: 3px solid #27ae60;
+}
+
+.thumb-card.no-label {
+  border-left: 3px solid #e0e6ee;
+}
+
+/* ---------- Картинка ---------- */
+.thumb-image-wrap {
+  position: relative;
+  flex-shrink: 0;
+  width: 106px;
+  height: 106px;
+}
+
+.thumb-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: #f0f0f0;
+}
+
+.thumb-remove {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--error);
+  color: white;
+  border: 2px solid white;
+  cursor: pointer;
+  font-size: 12px;
+  line-height: 1;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: 0.15s;
+}
+
+.thumb-remove:hover {
+  background: #c0392b;
+  transform: scale(1.1);
+}
+
+/* ---------- Информация справа ---------- */
+.thumb-info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.thumb-name {
+  font-size: 12px;
+  color: var(--muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ---------- Tom Select ---------- */
+.thumb-info .ts-wrapper {
+  font-size: 13px;
+}
+
+.thumb-info .ts-control {
+  min-height: 32px;
+  padding: 6px 10px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: white;
+  font-size: 13px;
+  box-shadow: none;
+}
+
+.thumb-info .ts-control.focus {
+  border-color: #4a7fb5;
+  box-shadow: 0 0 0 2px rgba(74, 127, 181, 0.15);
+}
+
+.thumb-info .ts-dropdown {
+  font-size: 13px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  margin-top: 2px;
+  z-index: 200;
+}
+
+.thumb-info .ts-dropdown .option {
+  padding: 6px 12px;
+  cursor: pointer;
+}
+
+.thumb-info .ts-dropdown .option.active {
+  background: #eaf2fb;
+  color: var(--accent);
+}
+
+.thumb-info .ts-dropdown .option:hover {
+  background: #f0f6ff;
+}
+
+/* ---------- Адаптив ---------- */
+@media (max-width: 900px) {
+  .preview-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .preview-panel {
+    height: auto;
+    min-height: 400px;
+  }
+}
+
+@media (max-width: 500px) {
+  .preview-panel {
+    padding: 10px;
+    min-height: 300px;
+  }
+
+  .thumb-card {
+    height: 110px;
+    gap: 10px;
+    padding: 10px;
+  }
+
+  .thumb-image-wrap {
+    width: 90px;
+    height: 90px;
+  }
+}

@@ -1,0 +1,150 @@
+/* static/css/charts.css */
+/* Графики без библиотек — горизонтальные CSS-бары.
+   Используются для визуализации метрик: Top-1, время, confidence, Macro-F1 */
+
+.charts-section {
+  margin-top: 24px;
+}
+
+.charts-section h3 {
+  color: var(--accent);
+  font-size: 15px;
+  margin: 0 0 12px;
+}
+
+/* ---------- Сетка графиков ---------- */
+.charts-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+}
+
+/* ---------- Один график ---------- */
+.chart-card {
+  background: var(--card);
+  border-radius: 10px;
+  padding: 16px 18px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+}
+
+.chart-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--accent);
+  margin: 0 0 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+/* ---------- Строка графика (модель + бар + значение) ---------- */
+.chart-row {
+  display: grid;
+  grid-template-columns: minmax(110px, 140px) 1fr minmax(50px, auto);
+  align-items: center;
+  gap: 10px;
+  font-size: 12px;
+  margin-bottom: 6px;
+}
+
+.chart-row:last-child {
+  margin-bottom: 0;
+}
+
+.chart-label {
+  color: var(--text);
+  font-weight: 500;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.chart-track {
+  background: #eef2f7;
+  height: 20px;
+  border-radius: 10px;
+  overflow: hidden;
+  position: relative;
+}
+
+.chart-fill {
+  height: 100%;
+  border-radius: 10px;
+  background: linear-gradient(90deg, #4a7fb5, #2c3e50);
+  transition: width 0.4s ease;
+}
+
+.chart-value {
+  text-align: right;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+  font-weight: 500;
+}
+
+/* ---------- Лучшее значение — выделяется ---------- */
+.chart-row.best .chart-label {
+  color: #1e7a3a;
+  font-weight: 700;
+}
+
+.chart-row.best .chart-fill {
+  background: linear-gradient(90deg, #27ae60, #1e7a3a);
+}
+
+.chart-row.best .chart-value {
+  color: #1e7a3a;
+  font-weight: 700;
+}
+
+/* ---------- Худшее значение (для времени — худшее = медленное) ---------- */
+.chart-row.worst .chart-fill {
+  background: linear-gradient(90deg, #e67e22, #d35400);
+}
+
+/* ---------- Разные цвета для разных метрик ---------- */
+/* Top-1 — синий (по умолчанию) */
+/* Время — оранжевый */
+.chart-card.chart-time .chart-fill {
+  background: linear-gradient(90deg, #f39c12, #d68910);
+}
+
+.chart-card.chart-time .chart-row.best .chart-fill {
+  background: linear-gradient(90deg, #27ae60, #1e7a3a);
+}
+
+/* Средняя уверенность — фиолетовый */
+.chart-card.chart-confidence .chart-fill {
+  background: linear-gradient(90deg, #9b59b6, #7d3c98);
+}
+
+/* Macro-F1 — зелёный */
+.chart-card.chart-f1 .chart-fill {
+  background: linear-gradient(90deg, #1abc9c, #16a085);
+}
+
+/* Overconfidence — красный (чем меньше, тем лучше) */
+.chart-card.chart-overconf .chart-fill {
+  background: linear-gradient(90deg, #e74c3c, #c0392b);
+}
+
+/* ---------- Адаптив ---------- */
+@media (min-width: 900px) {
+  .charts-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 500px) {
+  .chart-card {
+    padding: 12px;
+  }
+
+  .chart-row {
+    grid-template-columns: minmax(80px, 100px) 1fr 44px;
+    font-size: 11px;
+    gap: 8px;
+  }
+
+  .chart-track {
+    height: 16px;
+  }
+}

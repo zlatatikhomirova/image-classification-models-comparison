@@ -1,0 +1,197 @@
+/* static/css/metrics.css */
+/* Таблица метрик + плашка "оценено N из M" + детализация по изображениям */
+
+/* ---------- Плашка статуса метрик ---------- */
+.metrics-status {
+  padding: 10px 14px;
+  border-radius: 8px;
+  font-size: 13px;
+  margin: 14px 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.metrics-status.info {
+  background: #eaf2fb;
+  color: #2c3e50;
+  border-left: 3px solid #4a7fb5;
+}
+
+.metrics-status.warn {
+  background: #fdecc8;
+  color: #7a4f00;
+  border-left: 3px solid #d68910;
+}
+
+.metrics-status strong {
+  color: inherit;
+}
+
+/* ---------- Обёртка таблицы (для горизонтального скролла на узком) ---------- */
+.metrics-table-wrap {
+  overflow-x: auto;
+  margin: 12px 0 24px;
+  border-radius: 10px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+}
+
+/* ---------- Таблица ---------- */
+.metrics-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: var(--card);
+  font-size: 13px;
+  min-width: 720px;
+}
+
+.metrics-table th,
+.metrics-table td {
+  padding: 10px 12px;
+  text-align: left;
+  border-bottom: 1px solid var(--border);
+  white-space: nowrap;
+}
+
+.metrics-table th {
+  background: #f4f6f9;
+  font-weight: 600;
+  color: var(--accent);
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+
+.metrics-table tr:last-child td {
+  border-bottom: none;
+}
+
+.metrics-table tr:hover td {
+  background: #fafbfd;
+}
+
+/* Числовые ячейки — выравнивание вправо */
+.metrics-table td.num {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Лучшее значение в колонке — подсветка */
+.metrics-table td.best {
+  background: #eaf7ee;
+  color: #1e7a3a;
+  font-weight: 600;
+}
+
+.metrics-table td.best::after {
+  content: " ★";
+  color: #27ae60;
+  font-size: 10px;
+}
+
+/* Название модели в первой колонке */
+.metrics-table td.model-name {
+  font-weight: 600;
+  color: var(--accent);
+  white-space: nowrap;
+}
+
+/* ---------- Детализация по изображениям ---------- */
+.per-image-details {
+  margin-top: 20px;
+}
+
+.per-image-details h3 {
+  color: var(--accent);
+  font-size: 15px;
+  margin: 0 0 10px;
+}
+
+.per-image-item {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  margin-bottom: 8px;
+  overflow: hidden;
+}
+
+.per-image-item summary {
+  cursor: pointer;
+  padding: 10px 14px;
+  font-size: 13px;
+  font-weight: 500;
+  user-select: none;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+}
+
+.per-image-item summary::-webkit-details-marker {
+  display: none;
+}
+
+.per-image-item summary::before {
+  content: "▸";
+  color: var(--muted);
+  margin-right: 6px;
+  transition: transform 0.15s;
+  display: inline-block;
+}
+
+.per-image-item[open] summary::before {
+  transform: rotate(90deg);
+}
+
+.per-image-item summary:hover {
+  background: #fafbfd;
+}
+
+.per-image-item .summary-right {
+  font-size: 12px;
+  color: var(--muted);
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.per-image-true {
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.per-image-body {
+  padding: 0 14px 14px;
+}
+
+/* Таблица внутри детализации */
+.per-image-body .metrics-table {
+  min-width: auto;
+  box-shadow: none;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+}
+
+.per-image-body .metrics-table th,
+.per-image-body .metrics-table td {
+  padding: 6px 10px;
+  font-size: 12px;
+}
+
+/* ---------- Адаптив ---------- */
+@media (max-width: 600px) {
+  .metrics-table th,
+  .metrics-table td {
+    padding: 8px;
+    font-size: 12px;
+  }
+
+  .per-image-item summary {
+    padding: 8px 10px;
+    font-size: 12px;
+  }
+
+  .per-image-body {
+    padding: 0 10px 10px;
+  }
+}

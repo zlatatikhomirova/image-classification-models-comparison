@@ -1,0 +1,140 @@
+/* static/css/controls.css */
+/* Панель управления: порог, кнопки, чекпоинты */
+
+.controls {
+  background: var(--card);
+  border-radius: 10px;
+  padding: 14px 18px;
+  margin-bottom: 16px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* ---------- Ряд контролов ---------- */
+.controls-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+/* ---------- Порог уверенности ---------- */
+.threshold-label {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 13px;
+  color: var(--text);
+}
+
+.threshold-label input[type="range"] {
+  width: 180px;
+  accent-color: var(--accent);
+}
+
+.threshold-value {
+  font-weight: 600;
+  color: var(--accent);
+  min-width: 44px;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---------- Кнопки ---------- */
+.buttons {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.buttons .btn {
+  min-width: 110px;
+}
+
+/* ---------- Чекпоинты ---------- */
+.checkpoint-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding-top: 12px;
+  border-top: 1px solid var(--border);
+}
+
+.checkpoint-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.checkpoint-label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.checkpoint-label input[type="checkbox"] {
+  accent-color: var(--accent);
+  cursor: pointer;
+}
+
+.checkpoint-select {
+  flex: 1;
+  min-width: 240px;
+  padding: 6px 10px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font-size: 13px;
+  background: white;
+  font-family: inherit;
+  cursor: pointer;
+}
+
+.checkpoint-select:focus {
+  outline: none;
+  border-color: #4a7fb5;
+  box-shadow: 0 0 0 2px rgba(74, 127, 181, 0.15);
+}
+
+/* ---------- Адаптив ---------- */
+@media (max-width: 500px) {
+  .controls {
+    padding: 12px 14px;
+  }
+
+  .controls-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .threshold-label {
+    justify-content: space-between;
+  }
+
+  .threshold-label input[type="range"] {
+    flex: 1;
+    width: auto;
+  }
+
+  .buttons {
+    width: 100%;
+  }
+
+  .buttons .btn {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .checkpoint-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .checkpoint-select {
+    min-width: 0;
+  }
+}

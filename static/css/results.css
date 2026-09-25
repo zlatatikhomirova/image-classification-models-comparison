@@ -1,0 +1,172 @@
+/* static/css/results.css */
+/* Карточки результатов: по 8 моделям на каждое изображение,
+   гистограмма Top-5, бейджи уверенности */
+
+.results {
+  margin-top: 20px;
+}
+
+.results h2 {
+  color: var(--accent);
+  border-bottom: 2px solid var(--border);
+  padding-bottom: 6px;
+  margin: 28px 0 14px;
+  font-size: 17px;
+  word-break: break-all;
+}
+
+/* ---------- Сетка карточек моделей ---------- */
+.result-cards {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
+}
+
+/* ---------- Карточка одной модели ---------- */
+.result-card {
+  background: var(--card);
+  border-radius: 10px;
+  padding: 14px 16px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+  border-left: 3px solid var(--border);
+  transition: 0.15s;
+}
+
+.result-card:hover {
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+}
+
+/* ---------- Шапка карточки ---------- */
+.result-card-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.result-model {
+  font-weight: 700;
+  color: var(--accent);
+  font-size: 15px;
+}
+
+.result-head-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.result-time {
+  font-size: 12px;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---------- Top-1 блок ---------- */
+.result-top1 {
+  font-size: 14px;
+  margin-bottom: 10px;
+  color: var(--text);
+}
+
+.result-top1 strong {
+  color: var(--accent);
+}
+
+/* ---------- Бейдж уверенности ---------- */
+.status-badge {
+  display: inline-block;
+  padding: 2px 10px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 500;
+  margin-left: 6px;
+}
+
+.status-confident {
+  background: var(--confident-bg);
+  color: var(--confident-fg);
+}
+
+.status-unsure {
+  background: var(--unsure-bg);
+  color: var(--unsure-fg);
+}
+
+/* ---------- Гистограмма Top-5 ---------- */
+.bar-chart {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  margin-top: 8px;
+}
+
+.bar-row {
+  display: grid;
+  grid-template-columns: minmax(90px, 140px) 1fr minmax(46px, auto);
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+}
+
+.bar-label {
+  color: var(--text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.bar-track {
+  background: #eef2f7;
+  height: 16px;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #4a7fb5, #2c3e50);
+  border-radius: 8px;
+  transition: width 0.3s;
+}
+
+.bar-value {
+  text-align: right;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Первая полоса (Top-1) — более тёмная */
+.bar-row:first-child .bar-fill {
+  background: linear-gradient(90deg, #2c3e50, #1a252f);
+}
+
+.bar-row:first-child .bar-label {
+  font-weight: 600;
+  color: var(--accent);
+}
+
+/* ---------- Адаптив ---------- */
+@media (min-width: 900px) {
+  .result-cards {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 500px) {
+  .result-card {
+    padding: 12px;
+  }
+
+  .bar-row {
+    grid-template-columns: minmax(70px, 100px) 1fr 42px;
+    font-size: 11px;
+  }
+
+  .result-card-head {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
