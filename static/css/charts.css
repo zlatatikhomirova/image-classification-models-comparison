@@ -148,3 +148,10 @@
     height: 16px;
   }
 }
+
+.chart-description {
+  font-size: 12px;
+  color: var(--muted);
+  margin: -6px 0 12px;
+  line-height: 1.4;
+}

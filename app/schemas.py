@@ -12,22 +12,22 @@ from pydantic import BaseModel
 class PredictionItem(BaseModel):
     label: str
     confidence: float
-    is_confident: bool
 
 
 class ModelResult(BaseModel):
     model: str
     top: list[PredictionItem]
-    top1_confident: bool
     time_ms: float
 
 
 class ImageResult(BaseModel):
     filename: str
+    upload_id: str = ""      # UUID-имя файла в uploads/
+    stored_as: str = ""      # хеш-имя в чекпоинте
     results: list[ModelResult]
 
 
-# ---------- Метрики ----------
+# ---------- Метрики (используются в чекпоинтах) ----------
 
 class MetricRow(BaseModel):
     model: str
@@ -45,10 +45,7 @@ class MetricRow(BaseModel):
 
 class AnalyzeResponse(BaseModel):
     images: list[ImageResult]
-    metrics: Optional[list[MetricRow]] = None
     n_total: int
-    n_with_labels: int
-    threshold: float
 
 
 # ---------- Чекпоинты ----------

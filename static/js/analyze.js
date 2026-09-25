@@ -1,6 +1,14 @@
 // static/js/analyze.js
 /**
- * Запуск анализа: сбор файлов + меток, POST /api/analyze, рендер результатов.
+ * Запуск анализа и пересчёт метрик.
+ *
+ *  - Первый запуск — прогон всех файлов.
+ *  - Добавление новых — прогон ТОЛЬКО новых.
+ *  - Результаты аккумулируются в state.lastResult.images.
+ *  - Метрики считаются на фронте через calcMetrics().
+ *  - При изменении порога — пересчёт без запроса.
+ *
+ * Рендер результатов — в metrics.js (renderMetrics).
  */
 
 /* ---------- Основная функция ---------- */
@@ -12,47 +20,51 @@ async function runAnalyze() {
   }
 
   if (state.isProcessing) return;
-  state.isProcessing = true;
 
+  // Синхронизация: убираем результаты удалённых файлов
+  if (state.lastResult && state.lastResult.images) {
+    const currentNames = new Set(
+      state.selectedFiles.map((it) => it.file.name)
+    );
+    state.lastResult.images = state.lastResult.images.filter(
+      (img) => currentNames.has(img.filename)
+    );
+    state.lastResult.n_total = state.lastResult.images.length;
+  }
+
+  const alreadyDone = _getProcessedFilenames();
+  const newItems = state.selectedFiles.filter(
+    (item) => !alreadyDone.has(item.file.name)
+  );
+
+  if (newItems.length === 0) {
+    _recalcAndRender();
+    setStatus("Готово (пересчёт)", "success");
+    return;
+  }
+
+  state.isProcessing = true;
   const btn = document.getElementById("analyzeBtn");
   if (btn) btn.disabled = true;
 
-  const files = stateApi.getFiles();
-  const labels = stateApi.getLabelsMap();
-  const threshold = state.threshold;
-
-  setStatus(`Обработка ${files.length} изображений через 8 моделей...`);
-
-  // Показываем прогресс-бар (грубый, т.к. точного прогресса от сервера нет)
-  _showProgress(0, files.length);
+  setStatus(`Обработка ${newItems.length} новых изображений...`);
+  _showProgress(0, newItems.length);
 
   try {
-    const data = await api.analyze(files, labels, threshold);
-    state.lastResult = data;
-    state.lastCheckpointFile = null;  
+    const files = newItems.map((it) => it.file);
+    const data = await api.analyze(files);
+    _showProgress(newItems.length, newItems.length);
 
-    _showProgress(files.length, files.length);
-
-    renderResults(data);
-
-    // Если метрики есть — рендерим таблицу, графики, детализацию
-    if (data.metrics && data.metrics.length) {
-      if (typeof renderMetrics === "function") renderMetrics(data);
-      if (typeof renderCharts === "function") renderCharts(data.metrics);
-    } else {
-      const metricsBlock = document.getElementById("metricsBlock");
-      if (metricsBlock) {
-        metricsBlock.innerHTML = `
-          <div class="metrics-status warn">
-            Метки не указаны — метрики не рассчитаны. Укажите истинные классы
-            в превью, чтобы получить accuracy, F1 и другие метрики.
-          </div>
-        `;
-      }
-      const charts = document.getElementById("charts");
-      if (charts) charts.innerHTML = "";
+    if (!state.lastResult) {
+      state.lastResult = { images: [], n_total: 0 };
     }
 
+    for (const img of data.images) {
+      state.lastResult.images.push(img);
+    }
+    state.lastResult.n_total = state.lastResult.images.length;
+
+    _recalcAndRender();
     setStatus("Готово", "success");
   } catch (e) {
     setStatus("Ошибка: " + e.message, "error");
@@ -63,64 +75,55 @@ async function runAnalyze() {
   }
 }
 
-/* ---------- Рендер результатов ---------- */
+/* ---------- Пересчёт и рендер ---------- */
 
-function renderResults(data) {
-  const container = document.getElementById("results");
-  if (!container) return;
+function _recalcAndRender() {
+  if (!state.lastResult) return;
 
-  if (!data.images || !data.images.length) {
-    container.innerHTML = `<p>Нет результатов.</p>`;
-    return;
+  const images = state.lastResult.images;
+  const labels = stateApi.getLabelsMap();
+  const threshold = state.threshold;
+
+  const nWithLabels = images.filter((img) => labels[img.filename]).length;
+
+  if (nWithLabels > 0 && typeof calcMetrics === "function") {
+    state.lastResult.metrics = calcMetrics(images, labels, threshold);
+  } else {
+    state.lastResult.metrics = null;
   }
 
-  let html = "";
+  state.lastResult.n_with_labels = nWithLabels;
+  state.lastResult.threshold = threshold;
+  state.lastResult.labels = labels;
 
-  for (const img of data.images) {
-    html += `<h2>${escapeHtml(img.filename)}</h2>`;
-    html += `<div class="result-cards">`;
-
-    for (const r of img.results) {
-      html += _renderModelCard(r);
+  // Гистограммы (метрики)
+  const charts = document.getElementById("charts");
+  if (charts) charts.innerHTML = "";
+  if (state.lastResult.metrics && state.lastResult.metrics.length) {
+    if (typeof renderCharts === "function") {
+      renderCharts(state.lastResult.metrics);
     }
-
-    html += `</div>`;
   }
 
-  container.innerHTML = html;
+  // Детализация + формулы
+  if (typeof renderMetrics === "function") {
+    renderMetrics(state.lastResult);
+  }
 }
 
-function _renderModelCard(r) {
-  const t1 = r.top[0];
-  const badge = r.top1_confident
-    ? `<span class="status-badge status-confident">уверенно</span>`
-    : `<span class="status-badge status-unsure">сомневается</span>`;
+function recalcOnThreshold() {
+  if (!state.lastResult) return;
+  _recalcAndRender();
+}
 
-  const bars = r.top.map((t) => `
-    <div class="bar-row" title="${escapeHtml(t.label)}: ${t.confidence}%">
-      <span class="bar-label">${escapeHtml(t.label)}</span>
-      <div class="bar-track">
-        <div class="bar-fill" style="width: ${t.confidence}%"></div>
-      </div>
-      <span class="bar-value">${t.confidence}%</span>
-    </div>
-  `).join("");
-
-  return `
-    <div class="result-card">
-      <div class="result-card-head">
-        <span class="result-model">${escapeHtml(r.model)}</span>
-        <div class="result-head-right">
-          <button class="btn-link" onclick="showModelInfo('${r.model}')">о модели</button>
-          <span class="result-time">${r.time_ms} мс</span>
-        </div>
-      </div>
-      <div class="result-top1">
-        Top-1: <strong>${escapeHtml(t1.label)}</strong> · ${t1.confidence}% · ${badge}
-      </div>
-      <div class="bar-chart">${bars}</div>
-    </div>
-  `;
+function _getProcessedFilenames() {
+  const set = new Set();
+  if (state.lastResult && state.lastResult.images) {
+    for (const img of state.lastResult.images) {
+      set.add(img.filename);
+    }
+  }
+  return set;
 }
 
 /* ---------- Прогресс-бар ---------- */
@@ -142,18 +145,7 @@ function _hideProgress() {
   if (wrap) wrap.style.display = "none";
 }
 
-/* ---------- Хелпер ---------- */
-
-function escapeHtml(s) {
-  return String(s)
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#039;");
-}
-
 /* ---------- Экспорт ---------- */
 
 window.runAnalyze = runAnalyze;
-window.renderResults = renderResults;
+window.recalcOnThreshold = recalcOnThreshold;

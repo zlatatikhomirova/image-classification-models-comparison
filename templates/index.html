@@ -6,10 +6,11 @@
   <title>Image Classification Models Comparison</title>
   <link rel="icon" href="data:,">
 
-  <!-- Tom Select CSS -->
+  <!-- KaTeX CSS -->
+  <link rel="stylesheet" href="/static/lib/katex/katex.min.css">
+
   <link rel="stylesheet" href="/static/lib/tom-select/tom-select.css">
 
-  <!-- Наши CSS -->
   <link rel="stylesheet" href="/static/css/base.css">
   <link rel="stylesheet" href="/static/css/banner.css">
   <link rel="stylesheet" href="/static/css/dropzone.css">
@@ -24,18 +25,12 @@
   <div class="page">
     <div class="container">
 
-      <!-- ============================================================
-           ПЛАШКА ОПИСАНИЯ
-           ============================================================ -->
       <section class="info-banner">
         <h1>Image Classification Models Comparison</h1>
         <p class="info-subtitle">
           Сравнение 8 предобученных нейронных сетей на задаче классификации
-          изображений (ImageNet, 1000 классов). Загрузите изображения,
-          при необходимости укажите истинные классы — и получите
-          предсказания, метрики качества и графики сравнения.
+          изображений (ImageNet, 1000 классов).
         </p>
-
         <div class="info-grid">
           <div class="info-card">
             <div class="info-card-title">Модели</div>
@@ -49,21 +44,19 @@
               <li>EfficientNetB0</li>
               <li>EfficientNetV2B0</li>
             </ul>
+            <button class="btn-link info-models-btn" onclick="showAllModels()">
+              О моделях
+            </button>
           </div>
-
           <div class="info-card">
             <div class="info-card-title">Метрики</div>
             <ul class="info-list">
-              <li>Top-1 accuracy</li>
-              <li>Top-5 accuracy</li>
-              <li>Macro-F1</li>
-              <li>Внутриклассовая согласованность</li>
-              <li>Средняя уверенность</li>
-              <li>Доля уверенных ошибок</li>
+              <li>Top-1 accuracy</li><li>Top-5 accuracy</li>
+              <li>Macro-F1</li><li>Внутриклассовая согласованность</li>
+              <li>Средняя уверенность</li><li>Доля уверенных ошибок</li>
               <li>Среднее время инференса</li>
             </ul>
           </div>
-
           <div class="info-card">
             <div class="info-card-title">Как пользоваться</div>
             <ol class="info-list info-list-ordered">
@@ -76,24 +69,16 @@
         </div>
       </section>
 
-      <!-- ============================================================
-           ЗАГРУЗКА ФАЙЛОВ
-           ============================================================ -->
       <section class="drop-section">
         <div id="dropZone" class="drop-zone">
           <p class="drop-text">Перетащите изображения сюда</p>
-          <p class="drop-hint">
-            или нажмите для выбора · JPG, PNG, BMP, WEBP · до 50 файлов
-          </p>
+          <p class="drop-hint">или нажмите для выбора · ...</p>
           <input type="file" id="fileInput" accept="image/*" multiple hidden>
+          <div id="preview" class="preview-grid-inline"></div>
         </div>
       </section>
 
-      <!-- ============================================================
-           ПАНЕЛЬ УПРАВЛЕНИЯ
-           ============================================================ -->
       <section class="controls">
-        <!-- Ряд 1: порог + кнопки -->
         <div class="controls-row">
           <label class="threshold-label">
             <span>Порог уверенности:</span>
@@ -101,7 +86,6 @@
                    min="0" max="1" step="0.05" value="0.8">
             <span id="thresholdValue" class="threshold-value">80%</span>
           </label>
-
           <div class="buttons">
             <button id="analyzeBtn" class="btn btn-primary" onclick="runAnalyze()">
               Сравнить
@@ -112,7 +96,6 @@
           </div>
         </div>
 
-        <!-- Ряд 2: загрузка тестового набора -->
         <div class="controls-row">
           <button class="btn btn-secondary"
                   onclick="loadTestSet(10, 'balanced')">
@@ -127,7 +110,6 @@
           </button>
         </div>
 
-        <!-- Ряд 3: чекпоинты -->
         <div class="checkpoint-panel">
           <div class="checkpoint-row">
             <label class="checkpoint-label">
@@ -137,7 +119,6 @@
             <input type="text" id="checkpointName" class="text-input"
                    placeholder="Имя чекпоинта (необязательно)">
           </div>
-
           <div class="checkpoint-row">
             <select id="checkpointSelect" class="checkpoint-select">
               <option value="">— выбрать чекпоинт —</option>
@@ -158,14 +139,7 @@
         </div>
       </section>
 
-      <!-- ============================================================
-           ПРЕВЬЮ ЗАГРУЖЕННЫХ ФАЙЛОВ
-           ============================================================ -->
-      <section id="preview" class="preview-panel"></section>
 
-      <!-- ============================================================
-           ПРОГРЕСС-БАР
-           ============================================================ -->
       <div id="progressWrap" class="progress-wrap" style="display:none;">
         <div class="progress-track">
           <div id="progressFill" class="progress-fill"></div>
@@ -173,53 +147,34 @@
         <div id="progressText" class="progress-text"></div>
       </div>
 
-      <!-- ============================================================
-           СТАТУС
-           ============================================================ -->
       <div id="status" class="status"></div>
 
-      <!-- ============================================================
-           РЕЗУЛЬТАТЫ
-           ============================================================ -->
-      <section id="results" class="results"></section>
-
-      <!-- ============================================================
-           МЕТРИКИ И ГРАФИКИ
-           ============================================================ -->
+      <!-- Таблица метрик + детализация по изображениям -->
       <section id="metricsBlock" class="metrics-block"></section>
+
+       <!-- Графики -->
       <section id="charts" class="charts-section"></section>
 
     </div>
 
-    <!-- ============================================================
-         ФУТЕР
-         ============================================================ -->
     <footer class="footer">
       ML Compare App · FastAPI + Keras Applications · 2026
     </footer>
   </div>
 
-  <!-- ============================================================
-       МОДАЛЬНОЕ ОКНО "О МОДЕЛИ"
-       ============================================================ -->
   <div id="modalOverlay" class="modal-overlay" onclick="closeModal(event)">
     <div class="modal" onclick="event.stopPropagation()">
-      <button class="modal-close" onclick="closeModal()" title="Закрыть">x</button>
+      <button class="modal-close" onclick="closeModal()">x</button>
       <h2 id="modalTitle"></h2>
       <div id="modalBody"></div>
     </div>
   </div>
 
-  <!-- ============================================================
-       СКРИПТЫ
-       ============================================================ -->
-
-  <!-- Библиотеки -->
   <script src="/static/lib/tom-select/tom-select.complete.min.js"></script>
 
-  <!-- Наши модули (порядок важен) -->
   <script src="/static/js/api.js"></script>
   <script src="/static/js/state.js"></script>
+  <script src="/static/js/metrics_calc.js"></script>
   <script src="/static/js/modal.js"></script>
   <script src="/static/js/dropzone.js"></script>
   <script src="/static/js/preview.js"></script>
@@ -228,5 +183,9 @@
   <script src="/static/js/charts.js"></script>
   <script src="/static/js/checkpoints.js"></script>
   <script src="/static/js/main.js"></script>
+
+  <!-- KaTeX JS -->
+<script src="/static/lib/katex/katex.min.js"></script>
+<script src="/static/lib/katex/auto-render.min.js"></script>
 </body>
 </html>

@@ -3,12 +3,11 @@
  * Рендер превью-карточек.
  *
  * Два режима:
- *  1. Обычный — карточки с combobox (Tom Select) и кнопкой удаления.
- *  2. Из чекпоинта — статичные карточки (только просмотр),
- *     фото берётся из папки чекпоинта через stored_as.
+ *  1. Обычный — карточки с combobox и кнопкой удаления.
+ *  2. Из чекпоинта — статичные карточки (только просмотр).
  */
 
-/* ---------- Инициализация Tom Select на элементе ---------- */
+/* ---------- Tom Select ---------- */
 
 function initCombobox(selectEl, selectedValue, index) {
   if (typeof TomSelect === "undefined") {
@@ -27,44 +26,35 @@ function initCombobox(selectEl, selectedValue, index) {
     sortField: { field: "text", direction: "asc" },
     onChange: (value) => {
       stateApi.setLabel(index, value);
-      updateLabelCounter();
       const card = selectEl.closest(".thumb-card");
       if (card) {
         card.classList.toggle("has-label", !!value);
         card.classList.toggle("no-label", !value);
       }
+      if (state.lastResult && typeof recalcOnThreshold === "function") {
+        recalcOnThreshold();
+      }
     },
   });
 }
 
-/* ---------- Основная функция рендера ---------- */
+/* ---------- Рендер превью ---------- */
 
 function renderPreview() {
   const container = document.getElementById("preview");
   if (!container) return;
 
-  // Режим чекпоинта — статичные карточки
   if (state.lastCheckpointFile) {
     _renderCheckpointPreview(container);
     return;
   }
 
-  // Обычный режим
   const files = state.selectedFiles;
 
   if (!files.length) {
     container.innerHTML = "";
     return;
   }
-
-  const nWithLabels = stateApi.getNWithLabels();
-
-  const header = `
-    <div class="preview-panel-label">
-      <span>Загружено изображений: <span class="preview-count">${files.length}</span></span>
-      <span>С метками: <span class="preview-count">${nWithLabels} / ${files.length}</span></span>
-    </div>
-  `;
 
   let cardsHtml = `<div class="preview-grid">`;
   files.forEach((item, i) => {
@@ -86,15 +76,13 @@ function renderPreview() {
   });
   cardsHtml += `</div>`;
 
-  container.innerHTML = header + cardsHtml;
+  container.innerHTML = cardsHtml;
 
   files.forEach((item, i) => {
     const selectEl = document.getElementById(`label-select-${i}`);
     if (!selectEl) return;
     initCombobox(selectEl, item.label, i);
   });
-
-  updateLabelCounter();
 }
 
 /* ---------- Режим чекпоинта ---------- */
@@ -107,22 +95,14 @@ function _renderCheckpointPreview(container) {
   }
 
   const labels = data.labels || {};
-  const nWithLabels = Object.keys(labels).length;
   const checkpointFilename = state.lastCheckpointFile;
 
-  let html = `
-    <div class="preview-panel-label">
-      <span>Восстановлено из чекпоинта: <span class="preview-count">${data.images.length}</span></span>
-      <span>С метками: <span class="preview-count">${nWithLabels} / ${data.images.length}</span></span>
-    </div>
-    <div class="preview-grid">
-  `;
+  let html = `<div class="preview-grid">`;
 
   data.images.forEach((img) => {
     const label = labels[img.filename] || "";
     const hasLabel = label ? "has-label" : "no-label";
 
-    // Ссылка на фото: приоритет — stored_as, затем test_images, затем заглушка
     let imgUrl;
     if (img.stored_as && checkpointFilename) {
       imgUrl = api.checkpointImageUrl(checkpointFilename, img.stored_as);
@@ -149,24 +129,62 @@ function _renderCheckpointPreview(container) {
   container.innerHTML = html;
 }
 
-/* ---------- Обработчики ---------- */
+/* ---------- Удаление файла ---------- */
 
 function removeFileAndRerender(index) {
-  // В режиме чекпоинта удалять нельзя
   if (state.lastCheckpointFile) return;
 
+  const item = state.selectedFiles[index];
+  const filename = item ? item.file.name : null;
+
+  // Находим upload_id в state.lastResult
+  let uploadId = null;
+  if (state.lastResult && state.lastResult.images) {
+    const found = state.lastResult.images.find(
+      (img) => img.filename === filename
+    );
+    if (found) uploadId = found.upload_id;
+  }
+
   stateApi.removeFile(index);
+
+  // Удаляем файл с сервера
+  if (uploadId) {
+    api.deleteUpload(uploadId).catch(() => {});
+  }
+
+  // Убираем из state.lastResult
+  if (filename && state.lastResult && state.lastResult.images) {
+    state.lastResult.images = state.lastResult.images.filter(
+      (img) => img.filename !== filename
+    );
+    state.lastResult.n_total = state.lastResult.images.length;
+  }
+
+  // Если файлов не осталось — сбрасываем всё
+  if (state.selectedFiles.length === 0) {
+    state.lastResult = null;
+    state.lastCheckpointFile = null;
+
+    const results = document.getElementById("results");
+    const metricsBlock = document.getElementById("metricsBlock");
+    const charts = document.getElementById("charts");
+    if (results) results.innerHTML = "";
+    if (metricsBlock) metricsBlock.innerHTML = "";
+    if (charts) charts.innerHTML = "";
+
+    renderPreview();
+    return;
+  }
+
+  // Пересчёт метрик
+  if (state.lastResult && state.lastResult.images.length > 0) {
+    if (typeof recalcOnThreshold === "function") {
+      recalcOnThreshold();
+    }
+  }
+
   renderPreview();
-}
-
-/* ---------- Счётчик меток ---------- */
-
-function updateLabelCounter() {
-  const files = state.selectedFiles;
-  if (!files.length) return;
-  const n = stateApi.getNWithLabels();
-  const el = document.querySelector(".preview-panel-label .preview-count:last-child");
-  if (el) el.textContent = `${n} / ${files.length}`;
 }
 
 /* ---------- Хелпер ---------- */

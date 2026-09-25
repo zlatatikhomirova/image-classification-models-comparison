@@ -139,9 +139,12 @@ def load_checkpoint(filename: str) -> dict | None:
 
 def get_checkpoint_image_path(filename: str, image_name: str) -> str | None:
     """Путь к фото из папки чекпоинта. None — если нет."""
-    safe_dir = os.path.basename(filename)
+    safe = os.path.basename(filename)
+    # Убираем .json из имени папки
+    if safe.endswith(".json"):
+        safe = safe[:-5]
     safe_img = os.path.basename(image_name)
-    path = os.path.join(CHECKPOINT_DIR, safe_dir, safe_img)
+    path = os.path.join(CHECKPOINT_DIR, safe, safe_img)
     if os.path.isfile(path):
         return path
     return None

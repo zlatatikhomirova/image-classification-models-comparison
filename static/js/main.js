@@ -46,7 +46,12 @@ function _initThresholdSlider() {
     const v = parseFloat(input.value);
     state.threshold = v;
     label.textContent = Math.round(v * 100) + "%";
-  });
+
+    // Пересчёт без запроса
+    if (typeof recalcOnThreshold === "function") {
+        recalcOnThreshold();
+    }
+    });
 }
 
 /* ---------- Загрузка классов ---------- */

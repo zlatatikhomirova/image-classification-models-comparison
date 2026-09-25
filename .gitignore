@@ -1,0 +1,14 @@
+venv/
+.venv/
+__pycache__/
+*.pyc
+*.pyo
+.DS_Store
+.idea/
+.vscode/
+uploads/*
+!uploads/.gitkeep
+results/checkpoints/*.json
+results/checkpoints/*/
+!results/checkpoints/.gitkeep
+*.log

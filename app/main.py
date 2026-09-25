@@ -11,6 +11,7 @@ from fastapi.staticfiles import StaticFiles
 
 from app.config import TEST_DIR, UPLOAD_DIR
 from app.routers import analyze, checkpoints, classes, pages, test_images
+from app.routers import uploads
 
 app = FastAPI(
     title="Image Classification Models Comparison",
@@ -37,6 +38,8 @@ app.include_router(analyze.router)       # POST /api/analyze
 app.include_router(checkpoints.router)   # /api/checkpoints/*
 app.include_router(test_images.router)   # GET /api/test_images
 app.include_router(classes.router)       # GET /api/classes
+app.include_router(uploads.router)
+
 
 
 @app.get("/api/health")

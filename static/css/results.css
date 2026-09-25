@@ -1,88 +1,193 @@
 /* static/css/results.css */
-/* Карточки результатов: по 8 моделям на каждое изображение,
-   гистограмма Top-5, бейджи уверенности */
+/* Результаты: раскрывающиеся блоки по картинкам,
+   таблица моделей внутри, раскрывающиеся Top-5 */
 
 .results {
   margin-top: 20px;
 }
 
-.results h2 {
+.results-section-title {
   color: var(--accent);
-  border-bottom: 2px solid var(--border);
-  padding-bottom: 6px;
-  margin: 28px 0 14px;
-  font-size: 17px;
-  word-break: break-all;
+  font-size: 15px;
+  margin: 24px 0 12px;
 }
 
-/* ---------- Сетка карточек моделей ---------- */
-.result-cards {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 12px;
+/* ============================================================
+   СПИСОК КАРТИНОК
+   ============================================================ */
+
+.per-image-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 }
 
-/* ---------- Карточка одной модели ---------- */
-.result-card {
+.per-image-item {
   background: var(--card);
+  border: 1px solid var(--border);
   border-radius: 10px;
-  padding: 14px 16px;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
-  border-left: 3px solid var(--border);
-  transition: 0.15s;
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
 }
 
-.result-card:hover {
-  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
-}
-
-/* ---------- Шапка карточки ---------- */
-.result-card-head {
+.per-image-item summary {
+  cursor: pointer;
+  padding: 12px 16px;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 10px;
+  gap: 12px;
   flex-wrap: wrap;
-  gap: 6px;
+  user-select: none;
+  transition: 0.15s;
 }
 
-.result-model {
-  font-weight: 700;
-  color: var(--accent);
-  font-size: 15px;
+.per-image-item summary::-webkit-details-marker {
+  display: none;
 }
 
-.result-head-right {
+.per-image-item summary::before {
+  content: "▸";
+  color: var(--muted);
+  margin-right: 4px;
+  transition: transform 0.15s;
+  display: inline-block;
+  font-size: 11px;
+}
+
+.per-image-item[open] summary::before {
+  transform: rotate(90deg);
+}
+
+.per-image-item summary:hover {
+  background: #fafbfd;
+}
+
+.summary-left {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 12px;
+  flex-wrap: wrap;
+  min-width: 0;
+  flex: 1;
 }
 
-.result-time {
-  font-size: 12px;
+.per-image-filename {
+  font-weight: 600;
+  color: var(--accent);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.per-image-best {
+  font-size: 13px;
   color: var(--muted);
-  font-variant-numeric: tabular-nums;
 }
 
-/* ---------- Top-1 блок ---------- */
-.result-top1 {
-  font-size: 14px;
-  margin-bottom: 10px;
-  color: var(--text);
-}
-
-.result-top1 strong {
+.per-image-best strong {
   color: var(--accent);
 }
 
-/* ---------- Бейдж уверенности ---------- */
+.summary-right {
+  font-size: 12px;
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+.per-image-true {
+  color: #1e7a3a;
+  font-weight: 600;
+}
+
+.per-image-no-label {
+  color: var(--muted);
+  font-style: italic;
+}
+
+.per-image-body {
+  padding: 0 16px 16px;
+}
+
+/* ============================================================
+   ТАБЛИЦА МОДЕЛЕЙ ВНУТРИ КАРТОЧКИ
+   ============================================================ */
+
+.per-image-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.per-image-table th,
+.per-image-table td {
+  padding: 8px 10px;
+  text-align: left;
+  border-bottom: 1px solid var(--border);
+}
+
+.per-image-table th {
+  background: #f4f6f9;
+  font-weight: 600;
+  color: var(--accent);
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+.per-image-table tr:last-child td {
+  border-bottom: none;
+}
+
+.per-image-table td.num {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.per-image-table .model-name {
+  font-weight: 600;
+  color: var(--accent);
+  white-space: nowrap;
+}
+
+/* Кнопки в строке модели */
+.per-image-table .btn-link {
+  background: none;
+  border: none;
+  color: #4a7fb5;
+  font-size: 12px;
+  cursor: pointer;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-family: inherit;
+  white-space: nowrap;
+}
+
+.per-image-table .btn-link:hover {
+  background: #eaf2fb;
+  text-decoration: underline;
+}
+
+.per-image-table .top5-btn {
+  color: #2c3e50;
+  font-weight: 500;
+}
+
+.per-image-table .top5-btn:hover {
+  background: #eef2f7;
+}
+
+/* ============================================================
+   БЕЙДЖИ
+   ============================================================ */
+
 .status-badge {
   display: inline-block;
   padding: 2px 10px;
   border-radius: 12px;
   font-size: 11px;
   font-weight: 500;
-  margin-left: 6px;
+  white-space: nowrap;
 }
 
 .status-confident {
@@ -95,19 +200,45 @@
   color: var(--unsure-fg);
 }
 
-/* ---------- Гистограмма Top-5 ---------- */
+.status-correct {
+  background: #d4f4dd;
+  color: #1e7a3a;
+}
+
+.status-wrong {
+  background: #fadbd8;
+  color: #922b21;
+}
+
+/* ============================================================
+   TOP-5 ПОД СТРОКОЙ
+   ============================================================ */
+
+.top5-row td {
+  background: #fafbfd;
+  padding: 14px 20px;
+  border-top: 1px dashed #d5dde6;
+}
+
+.top5-row .bar-chart {
+  margin-top: 0;
+}
+
+/* ============================================================
+   ГИСТОГРАММА (Top-5)
+   ============================================================ */
+
 .bar-chart {
   display: flex;
   flex-direction: column;
   gap: 5px;
-  margin-top: 8px;
 }
 
 .bar-row {
   display: grid;
-  grid-template-columns: minmax(90px, 140px) 1fr minmax(46px, auto);
+  grid-template-columns: minmax(100px, 150px) 1fr minmax(50px, auto);
   align-items: center;
-  gap: 8px;
+  gap: 10px;
   font-size: 12px;
 }
 
@@ -138,7 +269,6 @@
   font-variant-numeric: tabular-nums;
 }
 
-/* Первая полоса (Top-1) — более тёмная */
 .bar-row:first-child .bar-fill {
   background: linear-gradient(90deg, #2c3e50, #1a252f);
 }
@@ -148,25 +278,37 @@
   color: var(--accent);
 }
 
-/* ---------- Адаптив ---------- */
-@media (min-width: 900px) {
-  .result-cards {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
+/* ============================================================
+   АДАПТИВ
+   ============================================================ */
 
-@media (max-width: 500px) {
-  .result-card {
-    padding: 12px;
+@media (max-width: 700px) {
+  .per-image-item summary {
+    padding: 10px 12px;
+    font-size: 12px;
   }
 
-  .bar-row {
-    grid-template-columns: minmax(70px, 100px) 1fr 42px;
+  .per-image-body {
+    padding: 0 12px 12px;
+  }
+
+  .per-image-table th,
+  .per-image-table td {
+    padding: 6px 8px;
     font-size: 11px;
   }
 
-  .result-card-head {
-    flex-direction: column;
-    align-items: flex-start;
+  .per-image-table .btn-link {
+    font-size: 11px;
+    padding: 1px 4px;
+  }
+
+  .bar-row {
+    grid-template-columns: minmax(70px, 100px) 1fr 40px;
+    font-size: 11px;
+  }
+
+  .top5-row td {
+    padding: 10px 12px;
   }
 }

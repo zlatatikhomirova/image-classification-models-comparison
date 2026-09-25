@@ -139,3 +139,39 @@
     font-weight: 600;
   }
 }
+
+/* ---------- Таблица моделей ---------- */
+
+.modal .models-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+  margin-top: 10px;
+}
+
+.modal .models-table th,
+.modal .models-table td {
+  padding: 8px 10px;
+  text-align: left;
+  border-bottom: 1px solid var(--border);
+  vertical-align: top;
+}
+
+.modal .models-table th {
+  background: #f4f6f9;
+  font-weight: 600;
+  color: var(--accent);
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+.modal .models-table .model-name {
+  font-weight: 600;
+  color: var(--accent);
+  white-space: nowrap;
+}
+
+.modal .models-table .num {
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}

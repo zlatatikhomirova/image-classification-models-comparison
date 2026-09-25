@@ -1,197 +1,452 @@
 /* static/css/metrics.css */
-/* Таблица метрик + плашка "оценено N из M" + детализация по изображениям */
 
-/* ---------- Плашка статуса метрик ---------- */
-.metrics-status {
-  padding: 10px 14px;
-  border-radius: 8px;
-  font-size: 13px;
-  margin: 14px 0;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.metrics-status.info {
-  background: #eaf2fb;
-  color: #2c3e50;
-  border-left: 3px solid #4a7fb5;
-}
-
-.metrics-status.warn {
-  background: #fdecc8;
-  color: #7a4f00;
-  border-left: 3px solid #d68910;
-}
-
-.metrics-status strong {
-  color: inherit;
-}
-
-/* ---------- Обёртка таблицы (для горизонтального скролла на узком) ---------- */
-.metrics-table-wrap {
-  overflow-x: auto;
-  margin: 12px 0 24px;
-  border-radius: 10px;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
-}
-
-/* ---------- Таблица ---------- */
-.metrics-table {
-  width: 100%;
-  border-collapse: collapse;
-  background: var(--card);
-  font-size: 13px;
-  min-width: 720px;
-}
-
-.metrics-table th,
-.metrics-table td {
-  padding: 10px 12px;
-  text-align: left;
-  border-bottom: 1px solid var(--border);
-  white-space: nowrap;
-}
-
-.metrics-table th {
-  background: #f4f6f9;
-  font-weight: 600;
-  color: var(--accent);
-  position: sticky;
-  top: 0;
-  z-index: 1;
-}
-
-.metrics-table tr:last-child td {
-  border-bottom: none;
-}
-
-.metrics-table tr:hover td {
-  background: #fafbfd;
-}
-
-/* Числовые ячейки — выравнивание вправо */
-.metrics-table td.num {
-  text-align: right;
-  font-variant-numeric: tabular-nums;
-}
-
-/* Лучшее значение в колонке — подсветка */
-.metrics-table td.best {
-  background: #eaf7ee;
-  color: #1e7a3a;
-  font-weight: 600;
-}
-
-.metrics-table td.best::after {
-  content: " ★";
-  color: #27ae60;
-  font-size: 10px;
-}
-
-/* Название модели в первой колонке */
-.metrics-table td.model-name {
-  font-weight: 600;
-  color: var(--accent);
-  white-space: nowrap;
-}
-
-/* ---------- Детализация по изображениям ---------- */
-.per-image-details {
+.metrics-block {
   margin-top: 20px;
 }
 
-.per-image-details h3 {
+/* ============================================================
+   ДЕТАЛИЗАЦИЯ ПО ИЗОБРАЖЕНИЯМ
+   ============================================================ */
+
+.results-section-title {
   color: var(--accent);
-  font-size: 15px;
-  margin: 0 0 10px;
+  font-size: 16px;
+  margin: 0 0 14px;
+}
+
+.group-title {
+  font-size: 13px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin: 18px 0 10px;
+  padding-left: 10px;
+}
+
+.group-with-label {
+  color: #1e7a3a;
+  border-left: 3px solid #27ae60;
+}
+
+.group-without-label {
+  color: var(--muted);
+  border-left: 3px solid #c8d2dc;
+}
+
+.per-image-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 }
 
 .per-image-item {
   background: var(--card);
   border: 1px solid var(--border);
-  border-radius: 8px;
-  margin-bottom: 8px;
+  border-radius: 10px;
   overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
 }
 
 .per-image-item summary {
   cursor: pointer;
-  padding: 10px 14px;
-  font-size: 13px;
-  font-weight: 500;
-  user-select: none;
+  padding: 8px 14px;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
+  flex-wrap: wrap;
+  user-select: none;
+  transition: 0.15s;
+  list-style: none;
 }
 
-.per-image-item summary::-webkit-details-marker {
-  display: none;
-}
+.per-image-item summary::-webkit-details-marker { display: none; }
+.per-image-item summary:hover { background: #fafbfd; }
 
-.per-image-item summary::before {
-  content: "▸";
-  color: var(--muted);
-  margin-right: 6px;
-  transition: transform 0.15s;
-  display: inline-block;
-}
-
-.per-image-item[open] summary::before {
-  transform: rotate(90deg);
-}
-
-.per-image-item summary:hover {
-  background: #fafbfd;
-}
-
-.per-image-item .summary-right {
-  font-size: 12px;
-  color: var(--muted);
+.per-image-summary-left {
   display: flex;
-  gap: 8px;
   align-items: center;
+  gap: 10px;
+  min-width: 0;
+  flex: 1;
+}
+
+/* Маленькая иконка в свёрнутом */
+.per-image-thumb {
+  width: 32px;
+  height: 32px;
+  object-fit: cover;
+  border-radius: 4px;
+  border: 1px solid var(--border);
+  flex-shrink: 0;
+  background: #f0f0f0;
+}
+
+.per-image-thumb-empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 9px;
+  color: var(--muted);
+}
+
+.per-image-summary-info {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.per-image-filename {
+  font-weight: 600;
+  color: var(--accent);
+  font-size: 13px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .per-image-true {
-  color: var(--accent);
-  font-weight: 600;
+  font-size: 12px;
+  color: #1e7a3a;
 }
+
+.per-image-no-label {
+  font-size: 12px;
+  color: var(--muted);
+  font-style: italic;
+}
+
+.per-image-summary-right {
+  font-size: 12px;
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+.per-image-best strong { color: var(--accent); }
 
 .per-image-body {
   padding: 0 14px 14px;
 }
 
-/* Таблица внутри детализации */
-.per-image-body .metrics-table {
-  min-width: auto;
-  box-shadow: none;
-  border: 1px solid var(--border);
-  border-radius: 6px;
+/* Большая картинка при раскрытии */
+.per-image-big-wrap {
+  display: flex;
+  justify-content: center;
+  margin: 12px 0 16px;
 }
 
-.per-image-body .metrics-table th,
-.per-image-body .metrics-table td {
-  padding: 6px 10px;
+.per-image-big {
+  max-width: 300px;
+  max-height: 300px;
+  width: auto;
+  height: auto;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.per-image-big-empty {
+  width: 300px;
+  height: 200px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f0f0f0;
+  color: var(--muted);
   font-size: 12px;
 }
 
-/* ---------- Адаптив ---------- */
-@media (max-width: 600px) {
-  .metrics-table th,
-  .metrics-table td {
-    padding: 8px;
-    font-size: 12px;
-  }
+/* ============================================================
+   ТАБЛИЦА МОДЕЛЕЙ
+   ============================================================ */
 
-  .per-image-item summary {
-    padding: 8px 10px;
-    font-size: 12px;
-  }
+.per-image-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
 
-  .per-image-body {
-    padding: 0 10px 10px;
+.per-image-table th,
+.per-image-table td {
+  padding: 8px 10px;
+  text-align: left;
+  border-bottom: 1px solid var(--border);
+}
+
+.per-image-table th {
+  background: #f4f6f9;
+  font-weight: 600;
+  color: var(--accent);
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+.per-image-table tr:last-child td { border-bottom: none; }
+
+.per-image-table td.num {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.per-image-table td.model-name {
+  font-weight: 600;
+  color: var(--accent);
+  white-space: nowrap;
+}
+
+.per-image-table .btn-link {
+  background: none;
+  border: none;
+  color: #4a7fb5;
+  font-size: 12px;
+  cursor: pointer;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-family: inherit;
+  white-space: nowrap;
+}
+
+.per-image-table .btn-link:hover {
+  background: #eaf2fb;
+  text-decoration: underline;
+}
+
+.per-image-table .top5-btn {
+  color: #2c3e50;
+  font-weight: 500;
+}
+
+/* ============================================================
+   БЕЙДЖИ
+   ============================================================ */
+
+.status-badge {
+  display: inline-block;
+  padding: 2px 10px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.status-confident { background: var(--confident-bg); color: var(--confident-fg); }
+.status-unsure { background: var(--unsure-bg); color: var(--unsure-fg); }
+.status-correct { background: #d4f4dd; color: #1e7a3a; }
+.status-wrong { background: #fadbd8; color: #922b21; }
+
+/* ============================================================
+   TOP-5
+   ============================================================ */
+
+.top5-row td {
+  background: #fafbfd;
+  padding: 14px 20px;
+  border-top: 1px dashed #d5dde6;
+}
+
+.bar-chart { display: flex; flex-direction: column; gap: 5px; }
+
+.bar-row {
+  display: grid;
+  grid-template-columns: minmax(100px, 150px) 1fr minmax(50px, auto);
+  align-items: center;
+  gap: 10px;
+  font-size: 12px;
+}
+
+.bar-label {
+  color: var(--text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.bar-track {
+  background: #eef2f7;
+  height: 16px;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #4a7fb5, #2c3e50);
+  border-radius: 8px;
+  transition: width 0.3s;
+}
+
+.bar-value {
+  text-align: right;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.bar-row:first-child .bar-fill {
+  background: linear-gradient(90deg, #2c3e50, #1a252f);
+}
+
+.bar-row:first-child .bar-label {
+  font-weight: 600;
+  color: var(--accent);
+}
+
+/* ============================================================
+   ФОРМУЛЫ МЕТРИК
+   ============================================================ */
+
+.metrics-explanations {
+  background: var(--card);
+  border-radius: 10px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+  margin-top: 24px;
+  overflow: hidden;
+}
+
+.metrics-expl-summary {
+  cursor: pointer;
+  padding: 14px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  user-select: none;
+  list-style: none;
+  background: var(--card);
+  border-bottom: 1px solid transparent;
+  transition: 0.15s;
+}
+
+.metrics-expl-summary::-webkit-details-marker { display: none; }
+.metrics-expl-summary:hover { background: #fafbfd; }
+
+.metrics-explanations[open] .metrics-expl-summary {
+  border-bottom-color: var(--border);
+}
+
+.metrics-title {
+  margin: 0;
+  color: var(--accent);
+  font-size: 15px;
+}
+
+.metrics-toggle {
+  font-size: 12px;
+  color: var(--muted);
+  padding: 4px 12px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: #fafbfd;
+  white-space: nowrap;
+}
+
+.metrics-expl-summary:hover .metrics-toggle {
+  background: #eef2f7;
+  color: var(--accent);
+}
+
+.mf-table-wrap {
+  overflow-x: auto;
+  padding: 0;
+}
+
+/* Обёртка — без фона, только отступы */
+.mf-table-wrap {
+  padding: 14px 18px 18px;
+  background: #f7f9fc;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* Убираем таблицу как таковую — теперь это список карточек */
+.mf-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+.mf-table thead {
+  display: none; /* скрываем шапку — она не нужна, если карточки */
+}
+
+/* Каждая строка — отдельная белая карточка */
+.mf-table tbody tr {
+  display: flex;
+  flex-direction: column;
+  background: var(--card);
+  border-radius: 10px;
+  padding: 14px 18px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+  gap: 10px;
+}
+
+/* Метрика — заголовок карточки */
+.mf-table .mf-name {
+  font-weight: 700;
+  color: var(--accent);
+  font-size: 14px;
+  width: auto;
+  white-space: normal;
+}
+
+/* Формула — по центру, отдельным блоком */
+.mf-table .mf-formula {
+  text-align: center;
+  width: auto;
+  padding: 8px 0;
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+}
+
+.mf-table .mf-formula .katex-display {
+  margin: 0;
+  font-size: 1.1em;
+}
+
+/* Описание — мелким шрифтом */
+.mf-table .mf-desc {
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.5;
+  width: auto;
+}
+
+.mf-name {
+  font-weight: 600;
+  color: var(--accent);
+  white-space: nowrap;
+  width: 1%;
+}
+
+.mf-formula {
+  text-align: center;
+  width: 1%;
+  padding: 12px 20px;
+}
+
+.mf-formula .katex-display {
+  margin: 0;
+  font-size: 1.05em;
+}
+
+.mf-desc {
+  color: var(--muted);
+  line-height: 1.5;
+}
+
+/* ============================================================
+   АДАПТИВ
+   ============================================================ */
+
+@media (max-width: 700px) {
+  .metric-explanation-list {
+    grid-template-columns: 1fr;
+    padding: 0 14px 14px;
   }
+  .per-image-thumb { width: 28px; height: 28px; }
+  .per-image-table th,
+  .per-image-table td { padding: 6px 8px; font-size: 11px; }
+  .bar-row { grid-template-columns: minmax(70px, 100px) 1fr 40px; font-size: 11px; }
 }

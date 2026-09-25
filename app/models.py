@@ -1,4 +1,8 @@
 # app/models.py
+"""
+Загрузка 8 предобученных моделей Keras Applications.
+Только инференс — без порогов, без метрик.
+"""
 
 import time
 import numpy as np
@@ -55,8 +59,11 @@ def available_models() -> list[str]:
     return list(_MODELS.keys())
 
 
-def predict(model_name: str, image_path: str,
-            top_k: int = 5, threshold: float = 0.8) -> dict:
+def predict(model_name: str, image_path: str, top_k: int = 5) -> dict:
+    """
+    Инференс одной модели на одной картинке.
+    Возвращает только сырые предсказания и время.
+    """
     cfg = _MODELS[model_name]
     img = Image.open(image_path).convert("RGB").resize(cfg["size"])
     arr = np.array(img, dtype=np.float32)
@@ -68,7 +75,6 @@ def predict(model_name: str, image_path: str,
     elapsed_ms = (time.perf_counter() - t0) * 1000
 
     decoded = decode_predictions(preds, top=top_k)[0]
-    top1_conf = float(decoded[0][2])
 
     return {
         "model": model_name,
@@ -76,16 +82,13 @@ def predict(model_name: str, image_path: str,
             {
                 "label": d[1],
                 "confidence": round(float(d[2]) * 100, 2),
-                "is_confident": float(d[2]) >= threshold,
             }
             for d in decoded
         ],
-        "top1_confident": top1_conf >= threshold,
         "time_ms": round(elapsed_ms, 1),
     }
 
 
-def predict_all(image_path: str, top_k: int = 5,
-                threshold: float = 0.8) -> list[dict]:
-    return [predict(name, image_path, top_k, threshold) for name in _MODELS]
-
+def predict_all(image_path: str, top_k: int = 5) -> list[dict]:
+    """Прогон всех 8 моделей на одной картинке."""
+    return [predict(name, image_path, top_k) for name in _MODELS]

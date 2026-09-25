@@ -1,7 +1,7 @@
 // static/js/charts.js
 /**
  * Графики без библиотек — горизонтальные CSS-бары.
- * Строятся по массиву метрик (из /api/analyze).
+ * Используются в сводке сверху.
  */
 
 function renderCharts(metrics) {
@@ -14,42 +14,39 @@ function renderCharts(metrics) {
   }
 
   container.innerHTML = `
-    <h3>Сравнение моделей</h3>
     <div class="charts-grid" id="chartsGrid"></div>
   `;
-
   const grid = document.getElementById("chartsGrid");
 
-  _addChart(grid, "Top-1 accuracy", metrics, "top1_accuracy",
+  _addChart(grid, "Top-1 accuracy", "Доля изображений, где правильный класс первый по вероятности", metrics, "top1_accuracy",
     (v) => v.toFixed(1) + "%", "");
 
-  _addChart(grid, "Top-5 accuracy", metrics, "top5_accuracy",
+  _addChart(grid, "Top-5 accuracy", "Правильный класс попал в топ-5 предсказаний", metrics, "top5_accuracy",
     (v) => v.toFixed(1) + "%", "");
 
-  _addChart(grid, "Macro-F1", metrics, "macro_f1",
+  _addChart(grid, "Macro-F1", "Среднее гармоническое precision и recall по классам", metrics, "macro_f1",
     (v) => v.toFixed(3), "chart-f1");
 
-  _addChart(grid, "Внутриклассовая согласованность", metrics, "intra_class_consistency",
+  _addChart(grid, "Внутриклассовая согласованность", "Насколько стабильны предсказания внутри класса", metrics, "intra_class_consistency",
     (v) => v.toFixed(1) + "%", "chart-confidence");
 
-  _addChart(grid, "Средняя уверенность", metrics, "avg_confidence",
+  _addChart(grid, "Средняя уверенность", "Средняя вероятность Top-1 предсказания", metrics, "avg_confidence",
     (v) => v.toFixed(1) + "%", "chart-confidence");
 
-  _addChart(grid, "Доля уверенных ошибок", metrics, "overconfidence_rate",
+  _addChart(grid, "Доля уверенных ошибок", "Доля ошибок с уверенностью выше порога (меньше — лучше)", metrics, "overconfidence_rate",
     (v) => v.toFixed(1) + "%", "chart-overconf");
 
-  _addChart(grid, "Среднее время инференса", metrics, "avg_time_ms",
+  _addChart(grid, "Среднее время инференса", "Среднее время обработки одного изображения", metrics, "avg_time_ms",
     (v) => v.toFixed(0) + " мс", "chart-time");
 }
 
 /* ---------- Один график ---------- */
 
-function _addChart(container, title, data, valueKey, formatFn, colorClass) {
+function _addChart(container, title, description, data, valueKey, formatFn, colorClass) {
   const values = data.map((d) => d[valueKey]);
   const max = Math.max(...values);
   const min = Math.min(...values);
 
-  // Определяем, что "лучше" в этой метрике
   const isTimeMetric = valueKey === "avg_time_ms";
   const isErrorMetric = valueKey === "overconfidence_rate";
   const bestValue = (isTimeMetric || isErrorMetric) ? min : max;
@@ -57,9 +54,9 @@ function _addChart(container, title, data, valueKey, formatFn, colorClass) {
   let html = `
     <div class="chart-card ${colorClass}">
       <div class="chart-title">${escapeHtml(title)}</div>
+      <div class="chart-description">${escapeHtml(description)}</div>
   `;
 
-  // Сортируем по значению (для времени и ошибок — по возрастанию, чтобы лучшие сверху)
   const sorted = data.slice().sort((a, b) => {
     if (isTimeMetric || isErrorMetric) return a[valueKey] - b[valueKey];
     return b[valueKey] - a[valueKey];

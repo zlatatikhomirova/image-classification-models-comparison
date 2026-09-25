@@ -1,7 +1,6 @@
 // static/js/modal.js
 /**
- * Модальное окно "о модели".
- * Содержит MODEL_INFO — описания 8 архитектур.
+ * Модальные окна: "о модели" и "о моделях".
  */
 
 const MODEL_INFO = {
@@ -112,16 +111,23 @@ const MODEL_INFO = {
   },
 };
 
-/* ---------- Работа с DOM ---------- */
+/* ---------- Хелпер ---------- */
 
 function _getOverlay() {
   return document.getElementById("modalOverlay");
 }
 
-/**
- * Показывает модальное окно с описанием модели.
- * @param {string} modelName — например, "VGG16"
- */
+function _esc(s) {
+  return String(s)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
+
+/* ---------- Модалка "о модели" ---------- */
+
 function showModelInfo(modelName) {
   const info = MODEL_INFO[modelName];
   if (!info) return;
@@ -154,17 +160,53 @@ function showModelInfo(modelName) {
   overlay.classList.add("active");
 }
 
-/**
- * Закрывает модальное окно.
- * Если event передан — закрываем только при клике по фону.
- */
+/* ---------- Модалка "о моделях" ---------- */
+
+function showAllModels() {
+  const title = document.getElementById("modalTitle");
+  const body = document.getElementById("modalBody");
+  const overlay = _getOverlay();
+  if (!title || !body || !overlay) return;
+
+  title.textContent = "Модели";
+
+  const rows = Object.entries(MODEL_INFO).map(([name, info]) => `
+    <tr>
+      <td class="model-name">${_esc(name)}</td>
+      <td class="num">${info.year}</td>
+      <td>${_esc(info.authors)}</td>
+      <td>${_esc(info.params)}</td>
+      <td>${_esc(info.input)}</td>
+      <td>${_esc(info.idea)}</td>
+    </tr>
+  `).join("");
+
+  body.innerHTML = `
+    <table class="models-table">
+      <thead>
+        <tr>
+          <th>Модель</th>
+          <th>Год</th>
+          <th>Авторы</th>
+          <th>Параметры</th>
+          <th>Вход</th>
+          <th>Идея</th>
+        </tr>
+      </thead>
+      <tbody>${rows}</tbody>
+    </table>
+  `;
+
+  overlay.classList.add("active");
+}
+
+/* ---------- Закрытие ---------- */
+
 function closeModal(event) {
   if (event && event.target !== event.currentTarget) return;
   const overlay = _getOverlay();
   if (overlay) overlay.classList.remove("active");
 }
-
-/* ---------- Закрытие по Esc ---------- */
 
 document.addEventListener("keydown", (e) => {
   if (e.key === "Escape") {
@@ -173,6 +215,9 @@ document.addEventListener("keydown", (e) => {
   }
 });
 
+/* ---------- Экспорт ---------- */
+
 window.showModelInfo = showModelInfo;
+window.showAllModels = showAllModels;
 window.closeModal = closeModal;
 window.MODEL_INFO = MODEL_INFO;
