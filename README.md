@@ -57,7 +57,7 @@ results/       — чекпоинты
 1. Клонировать репозиторий:
 
    ```
-   git clone https://github.com/<ваш-логин>/image-classification-models-comparison.git
+   git clone https://github.com/zlatatikhomirova/image-classification-models-comparison.git
    cd image-classification-models-comparison
    ```
 
